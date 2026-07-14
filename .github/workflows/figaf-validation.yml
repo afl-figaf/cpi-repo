@@ -5,6 +5,9 @@ on:
     branches:
       - 'cpi-figaf'
 
+permissions:
+  contents: write
+
 jobs:
   figaf-validations:
     runs-on: ubuntu-latest
