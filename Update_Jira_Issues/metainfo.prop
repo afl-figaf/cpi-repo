@@ -1,0 +1,5 @@
+#Store metainfo properties
+#Tue Jul 14 02:59:11 UTC 2026
+description=Updates Jira issues when triggered by Figaf webhooks.
+source=FigafDevOpsTool
+target=AtlassianJira
