@@ -45,3 +45,6 @@ project (":FigafIRTinfrastructure:iflow-LatencyTest").projectDir = file("FigafIR
 include "FigafIRTinfrastructure:sc-FigafMigration"
 project (":FigafIRTinfrastructure:sc-FigafMigration").projectDir = file("FigafIRTinfrastructure/ScriptCollection/FigafMigration")
 
+include "NewPackage:iflow-Test_Flow"
+project (":NewPackage:iflow-Test_Flow").projectDir = file("NewPackage/IntegrationFlow/Test_Flow")
+
