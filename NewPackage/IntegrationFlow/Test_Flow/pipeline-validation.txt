@@ -1,0 +1,42 @@
+Validation name: CPI Lint
+Execution time: 2026-07-14 15:31:44
+Exit code: 2
+Output: There was an error in the rules file: Error parsing rules file XML
+
+Validation name: Unit tests
+Execution time: 2026-07-14 15:32:08
+Exit code: 0
+Output: 
+Welcome to Gradle 7.4!
+
+Here are the highlights of this release:
+ - Aggregated test and JaCoCo reports
+ - Marking additional test source directories as tests in IntelliJ
+ - Support for Adoptium JDKs in Java toolchains
+
+For more details see https://docs.gradle.org/7.4/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+> Task :common:compileJava NO-SOURCE
+> Task :common:compileGroovy
+> Task :common:processResources NO-SOURCE
+> Task :common:classes
+> Task :common:jar
+> Task :common:compileTestJava NO-SOURCE
+> Task :common:compileTestGroovy NO-SOURCE
+> Task :common:processTestResources NO-SOURCE
+> Task :common:testClasses UP-TO-DATE
+> Task :common:test NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:compileJava NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:compileGroovy NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:processResources
+> Task :NewPackage:iflow-Test_Flow:classes
+> Task :NewPackage:iflow-Test_Flow:compileTestJava NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:compileTestGroovy NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:processTestResources NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:testClasses UP-TO-DATE
+> Task :NewPackage:iflow-Test_Flow:test NO-SOURCE
+
+BUILD SUCCESSFUL in 23s
+3 actionable tasks: 3 executed
+
