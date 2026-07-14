@@ -1,0 +1,121 @@
+name: Figaf Pipeline
+
+on:
+  push:
+    branches:
+      - 'cpi-figaf'
+
+jobs:
+  figaf-validations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Java 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Download and extract CPI Lint
+        run: |
+          curl -L -o cpilint.zip https://github.com/mwittrock/cpilint/releases/download/v1.0.4/cpilint-1.0.4.zip
+          unzip -o cpilint.zip
+          rm cpilint.zip
+          chmod +x cpilint-1.0.4/bin/cpilint
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.4
+
+      - name: Get changed IFlow directories
+        run: |
+          changedIflowDirs=$(git diff --name-only --diff-filter=d HEAD^ | grep -E '.*/IntegrationFlow/[^/]+' | awk -F/ '{print $1"/"$2"/"$3}' | sort | uniq)
+          echo "Changed IFlow Directories: $changedIflowDirs"
+
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "changedIflowDirs<<$EOF" >> ${GITHUB_ENV}
+          echo "${changedIflowDirs}" >> ${GITHUB_ENV}
+          echo "$EOF" >> ${GITHUB_ENV}
+
+      - name: CPI Lint validation
+        run: |
+          if [ -z "${{ env.changedIflowDirs }}" ]; then
+            echo "No IFlow changes detected, skipping CPI Lint validation"
+            exit 0
+          fi
+
+          readarray -t changedIflowDirs <<< "${{ env.changedIflowDirs }}"
+
+          for integrationFlowDir in "${changedIflowDirs[@]}"
+          do
+            echo "integrationFlowDir: $integrationFlowDir"
+            iflowName="$(basename "$integrationFlowDir")"
+            packageName="$(basename "$(dirname "$(dirname "$integrationFlowDir")")")"
+            (cd "$integrationFlowDir" && zip -r "../$iflowName.zip" .)
+
+            cpilintCommand="${{ github.workspace }}/cpilint-1.0.4/bin/cpilint -rules=${{ github.workspace }}/.github/workflows/cpilint.xml -files=\"../$iflowName.zip\""
+            echo "Executing cpilint: $cpilintCommand"
+            cpilintStatus=0
+            output=$(cd "$integrationFlowDir" && eval $cpilintCommand 2>&1) || cpilintStatus=$?
+
+            if [ -z "$cpilintStatus" ]; then
+              cpilintStatus=0
+            fi
+
+            echo "CPI Lint output: $output"
+            echo "CPI Lint exit code: $cpilintStatus"
+
+            echo "Validation name: CPI Lint" > "$integrationFlowDir/pipeline-validation.txt"
+            echo "Execution time: $(date +'%Y-%m-%d %H:%M:%S')" >> "$integrationFlowDir/pipeline-validation.txt"
+            echo "Exit code: $cpilintStatus" >> "$integrationFlowDir/pipeline-validation.txt"
+            echo -e "Output: $output\n" >> "$integrationFlowDir/pipeline-validation.txt"
+
+            rm -f "$integrationFlowDir.zip"
+          done
+
+      - name: Run unit tests
+        run: |
+          if [ -z "${{ env.changedIflowDirs }}" ]; then
+            echo "No IFlow changes detected, skipping Unit tests validation"
+            exit 0
+          fi
+
+          readarray -t changedIflowDirs <<< "${{ env.changedIflowDirs }}"
+
+          for integrationFlowDir in "${changedIflowDirs[@]}"
+          do
+            iflowName="$(basename "$integrationFlowDir")"
+            packageName="$(basename "$(dirname "$(dirname "$integrationFlowDir")")")"
+            runTestsCommand="gradle :$packageName:iflow-$iflowName:test"
+            echo "Executing runTestsCommand: $runTestsCommand"
+            runTestsStatus=0
+            output=$(eval $runTestsCommand 2>&1) || runTestsStatus=$?
+            if [ -z "$runTestsStatus" ]; then
+              runTestsStatus=0
+            fi
+            echo "Unit tests output: $output"
+            echo "Unit tests exit code: $runTestsStatus"
+
+            echo "Validation name: Unit tests" >> "$integrationFlowDir/pipeline-validation.txt"
+            echo "Execution time: $(date +'%Y-%m-%d %H:%M:%S')" >> "$integrationFlowDir/pipeline-validation.txt"
+            echo "Exit code: $runTestsStatus" >> "$integrationFlowDir/pipeline-validation.txt"
+            echo -e "Output: $output\n" >> "$integrationFlowDir/pipeline-validation.txt"
+          done
+
+      - name: Commit and push changes
+        run: |
+          if [[ $(git status --porcelain) ]]; then
+            git config --local user.email "irt@figaf.com"
+            git config --local user.name "Figaf"
+            git add .
+            git commit -m "Update pipeline-validation.txt"
+            git push
+          else
+            echo "No changes to commit"
+          fi
