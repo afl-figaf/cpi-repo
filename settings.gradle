@@ -15,14 +15,11 @@ project (":FigafJiraIntegration").projectDir = file("FigafJiraIntegration")
 include "NewPackage"
 project (":NewPackage").projectDir = file("NewPackage")
 
-include "FigafIRTinfrastructure:iflow-LatencyTest"
-project (":FigafIRTinfrastructure:iflow-LatencyTest").projectDir = file("FigafIRTinfrastructure/IntegrationFlow/LatencyTest")
-
 include "FigafIRTinfrastructure:iflow-Figaf_HTTP_to_JMS"
 project (":FigafIRTinfrastructure:iflow-Figaf_HTTP_to_JMS").projectDir = file("FigafIRTinfrastructure/IntegrationFlow/Figaf_HTTP_to_JMS")
 
-include "com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy"
-project (":com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy").projectDir = file("com.sap.integration.dsi/IntegrationFlow/com.sap.integration.dsi.dataplane.copy")
+include "FigafJiraIntegration:iflow-Update_Figaf_Transport_from_Jira"
+project (":FigafJiraIntegration:iflow-Update_Figaf_Transport_from_Jira").projectDir = file("FigafJiraIntegration/IntegrationFlow/Update_Figaf_Transport_from_Jira")
 
 include "FigafIRTinfrastructure:iflow-IRTHTTPtoProcessDirect"
 project (":FigafIRTinfrastructure:iflow-IRTHTTPtoProcessDirect").projectDir = file("FigafIRTinfrastructure/IntegrationFlow/IRTHTTPtoProcessDirect")
@@ -30,18 +27,21 @@ project (":FigafIRTinfrastructure:iflow-IRTHTTPtoProcessDirect").projectDir = fi
 include "FigafJiraIntegration:iflow-Update_Jira_Issues"
 project (":FigafJiraIntegration:iflow-Update_Jira_Issues").projectDir = file("FigafJiraIntegration/IntegrationFlow/Update_Jira_Issues")
 
-include "FigafJiraIntegration:iflow-Update_Figaf_Transport_from_Jira"
-project (":FigafJiraIntegration:iflow-Update_Figaf_Transport_from_Jira").projectDir = file("FigafJiraIntegration/IntegrationFlow/Update_Figaf_Transport_from_Jira")
-
-include "com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.generic"
-project (":com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.generic").projectDir = file("com.sap.integration.dsi/IntegrationFlow/com.sap.integration.dsi.dataplane.generic")
+include "com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy"
+project (":com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy").projectDir = file("com.sap.integration.dsi/IntegrationFlow/com.sap.integration.dsi.dataplane.copy")
 
 include "FigafJiraIntegration:iflow-Search_Jira_Issues"
 project (":FigafJiraIntegration:iflow-Search_Jira_Issues").projectDir = file("FigafJiraIntegration/IntegrationFlow/Search_Jira_Issues")
 
-include "FigafIRTinfrastructure:sc-FigafMigration"
-project (":FigafIRTinfrastructure:sc-FigafMigration").projectDir = file("FigafIRTinfrastructure/ScriptCollection/FigafMigration")
-
 include "com.sap.integration.dsi:sc-com.sap.integration.dsi.dataplane.scripts"
 project (":com.sap.integration.dsi:sc-com.sap.integration.dsi.dataplane.scripts").projectDir = file("com.sap.integration.dsi/ScriptCollection/com.sap.integration.dsi.dataplane.scripts")
+
+include "com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.generic"
+project (":com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.generic").projectDir = file("com.sap.integration.dsi/IntegrationFlow/com.sap.integration.dsi.dataplane.generic")
+
+include "FigafIRTinfrastructure:iflow-LatencyTest"
+project (":FigafIRTinfrastructure:iflow-LatencyTest").projectDir = file("FigafIRTinfrastructure/IntegrationFlow/LatencyTest")
+
+include "FigafIRTinfrastructure:sc-FigafMigration"
+project (":FigafIRTinfrastructure:sc-FigafMigration").projectDir = file("FigafIRTinfrastructure/ScriptCollection/FigafMigration")
 
