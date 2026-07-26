@@ -60,8 +60,14 @@ Message processMessage(Message message) {
                 logger.addCustomHeaderProperty("ProviderId",new String(dataAddress.provider_id))    
             }
             if(dataAddress.connector_name){
-                logger.addCustomHeaderProperty("ConnectorName",new String(dataAddress.connector_name))    
-            }  
+                String connectorName = new String(dataAddress.connector_name);
+                logger.addCustomHeaderProperty("ConnectorName", connectorName);
+                String secretName = new String(dataAddress.secretName);
+                if(secretName && !secretName.toLowerCase().startsWith(("SAP_DataSpaceIntegration_" + connectorName).toLowerCase())) {
+                    throw new Exception("Unauthorized access for connector '" + connectorName + "'");
+                }
+                
+            }   
             if(dataAddress.agreement_id){
                 logger.addCustomHeaderProperty("AgreementId",new String(dataAddress.agreement_id))
             }

@@ -44,6 +44,6 @@ Require-Capability: scriptcollection.com.sap.integration.dsi.dataplane.s
  cripts;resolution:=optional;bundleType:String="ScriptCollection";source
  :String="reference"
 Origin-Bundle-Version: 2.1.36
-Origin-ModifiedDate: 1783697492550
+Origin-ModifiedDate: 1784917825870
 SAP-ContentMode: ConfigureOnly
 

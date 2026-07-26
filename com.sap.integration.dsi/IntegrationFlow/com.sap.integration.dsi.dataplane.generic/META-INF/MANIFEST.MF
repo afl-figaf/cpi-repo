@@ -37,7 +37,7 @@ SAP-RuntimeProfile: iflmap
 Bundle-Name: Generic Data Plane Integration Flow
 Bundle-Version: 1.0.5
 SAP-NodeType: IFLMAP
-Origin-ModifiedDate: 1783697492490
+Origin-ModifiedDate: 1784917825810
 SAP-BundleType: IntegrationFlow
 Import-Service: com.sap.esb.webservice.audit.log.AuditLogger,com.sap.esb
  .security.KeyManagerFactory;multiple:=false,com.sap.esb.security.TrustM
