@@ -30,6 +30,9 @@ project (":com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy"
 include "FigafIRTinfrastructure:iflow-IRTHTTPtoProcessDirect"
 project (":FigafIRTinfrastructure:iflow-IRTHTTPtoProcessDirect").projectDir = file("FigafIRTinfrastructure/IntegrationFlow/IRTHTTPtoProcessDirect")
 
+include "NewPackage:iflow-Test_Flow"
+project (":NewPackage:iflow-Test_Flow").projectDir = file("NewPackage/IntegrationFlow/Test_Flow")
+
 include "FigafJiraIntegration:iflow-Update_Jira_Issues"
 project (":FigafJiraIntegration:iflow-Update_Jira_Issues").projectDir = file("FigafJiraIntegration/IntegrationFlow/Update_Jira_Issues")
 
@@ -44,7 +47,4 @@ project (":FigafIRTinfrastructure:sc-FigafMigration").projectDir = file("FigafIR
 
 include "com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.generic"
 project (":com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.generic").projectDir = file("com.sap.integration.dsi/IntegrationFlow/com.sap.integration.dsi.dataplane.generic")
-
-include "NewPackage:iflow-Test_Flow"
-project (":NewPackage:iflow-Test_Flow").projectDir = file("NewPackage/IntegrationFlow/Test_Flow")
 
