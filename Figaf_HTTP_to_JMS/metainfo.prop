@@ -1,0 +1,5 @@
+#Store metainfo properties
+#Sun Jul 26 20:39:45 UTC 2026
+description=\ HTTP to JMS bridge used during the testing of iflow.\u00A0
+source=SAPCloudPlatformIntegrationSuite
+target=SAPCloudPlatformIntegration
