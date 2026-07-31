@@ -26,10 +26,10 @@ jobs:
 
       - name: Download and extract CPI Lint
         run: |
-          curl -L -o cpilint.zip https://github.com/mwittrock/cpilint/releases/download/v1.0.4/cpilint-1.0.4.zip
+          curl -L -o cpilint.zip https://github.com/mwittrock/cpilint/releases/download/v1.0.5/cpilint-1.0.5.zip
           unzip -o cpilint.zip
           rm cpilint.zip
-          chmod +x cpilint-1.0.4/bin/cpilint
+          chmod +x cpilint-1.0.5/bin/cpilint
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -60,12 +60,11 @@ jobs:
             echo "integrationFlowDir: $integrationFlowDir"
             iflowName="$(basename "$integrationFlowDir")"
             packageName="$(basename "$(dirname "$(dirname "$integrationFlowDir")")")"
-            (cd "$integrationFlowDir" && zip -r "../$iflowName.zip" .)
 
-            cpilintCommand="${{ github.workspace }}/cpilint-1.0.4/bin/cpilint -rules=${{ github.workspace }}/.github/workflows/cpilint.xml -files=\"../$iflowName.zip\""
+            cpilintCommand="${{ github.workspace }}/cpilint-1.0.5/bin/cpilint -rules ${{ github.workspace }}/.github/workflows/cpilint.xml -unpacked-files \"$integrationFlowDir\""
             echo "Executing cpilint: $cpilintCommand"
             cpilintStatus=0
-            output=$(cd "$integrationFlowDir" && eval $cpilintCommand 2>&1) || cpilintStatus=$?
+            output=$(eval $cpilintCommand 2>&1) || cpilintStatus=$?
 
             if [ -z "$cpilintStatus" ]; then
               cpilintStatus=0
@@ -78,8 +77,6 @@ jobs:
             echo "Execution time: $(date +'%Y-%m-%d %H:%M:%S')" >> "$integrationFlowDir/pipeline-validation.txt"
             echo "Exit code: $cpilintStatus" >> "$integrationFlowDir/pipeline-validation.txt"
             echo -e "Output: $output\n" >> "$integrationFlowDir/pipeline-validation.txt"
-
-            rm -f "$integrationFlowDir.zip"
           done
 
       - name: Run unit tests
@@ -95,6 +92,13 @@ jobs:
           do
             iflowName="$(basename "$integrationFlowDir")"
             packageName="$(basename "$(dirname "$(dirname "$integrationFlowDir")")")"
+
+            hasTests=$(find "$integrationFlowDir" -path '*/src/test/*' \( -name '*.groovy' -o -name '*.java' \) 2>/dev/null | head -n1)
+            if [ -z "$hasTests" ]; then
+              echo "No unit tests found for $iflowName, skipping unit tests"
+              continue
+            fi
+
             runTestsCommand="gradle :$packageName:iflow-$iflowName:test"
             echo "Executing runTestsCommand: $runTestsCommand"
             runTestsStatus=0
