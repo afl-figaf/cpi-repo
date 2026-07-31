@@ -1,10 +1,22 @@
 Validation name: CPI Lint
-Execution time: 2026-07-31 11:46:41
-Exit code: 2
-Output: There was a rules file error: Error parsing rules file XML
+Execution time: 2026-07-31 11:55:21
+Exit code: 1
+Output: CPILint version 1.1.0, copyright (c) 2019-2025 Morten N. Wittrock
+
+ ________  ________  ___  ___       ___  ________   _________   
+|\   ____\|\   __  \|\  \|\  \     |\  \|\   ___  \|\___   ___\ 
+\ \  \___|\ \  \|\  \ \  \ \  \    \ \  \ \  \ \  \|___ \  \_| 
+ \ \  \    \ \   ____\ \  \ \  \    \ \  \ \  \ \  \   \ \  \  
+  \ \  \____\ \  \___|\ \  \ \  \____\ \  \ \  \ \  \   \ \  \ 
+   \ \_______\ \__\    \ \__\ \_______\ \__\ \__\ \__\   \ \__\
+    \|_______|\|__|     \|__|\|_______|\|__|\|__| \|__|    \|__|
+
+In iflow 'Test Flow' (ID 'Test_Flow'): Iflow does not have the required description.
+
+Inspecting 1 iflow resulted in 1 issue found.
 
 Validation name: Unit tests
-Execution time: 2026-07-31 11:47:12
+Execution time: 2026-07-31 11:55:51
 Exit code: 1
 Output: 
 Welcome to Gradle 7.4!
@@ -59,6 +71,6 @@ Execution failed for task ':NewPackage:iflow-Test_Flow:test'.
 
 * Get more help at https://help.gradle.org
 
-BUILD FAILED in 30s
+BUILD FAILED in 28s
 6 actionable tasks: 6 executed
 
