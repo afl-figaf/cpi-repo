@@ -18,18 +18,18 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Java 11
+      - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: '11'
+          java-version: '17'
 
       - name: Download and extract CPI Lint
         run: |
-          curl -L -o cpilint.zip https://github.com/mwittrock/cpilint/releases/download/v1.0.5/cpilint-1.0.5.zip
+          curl -L -o cpilint.zip https://github.com/mwittrock/cpilint/releases/download/v1.1.0/cpilint-1.1.0.zip
           unzip -o cpilint.zip
           rm cpilint.zip
-          chmod +x cpilint-1.0.5/bin/cpilint
+          chmod +x cpilint-1.1.0/bin/cpilint
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -61,7 +61,7 @@ jobs:
             iflowName="$(basename "$integrationFlowDir")"
             packageName="$(basename "$(dirname "$(dirname "$integrationFlowDir")")")"
 
-            cpilintCommand="${{ github.workspace }}/cpilint-1.0.5/bin/cpilint -rules ${{ github.workspace }}/.github/workflows/cpilint.xml -unpacked-files \"$integrationFlowDir\""
+            cpilintCommand="${{ github.workspace }}/cpilint-1.1.0/bin/cpilint -rules ${{ github.workspace }}/.github/workflows/cpilint.xml -unpacked-files \"$integrationFlowDir\" -skipvercheck"
             echo "Executing cpilint: $cpilintCommand"
             cpilintStatus=0
             output=$(eval $cpilintCommand 2>&1) || cpilintStatus=$?
