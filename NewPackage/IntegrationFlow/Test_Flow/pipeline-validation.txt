@@ -1,10 +1,10 @@
 Validation name: CPI Lint
-Execution time: 2026-07-31 11:26:58
+Execution time: 2026-07-31 11:34:20
 Exit code: 2
 Output: There was a rules file error: Error parsing rules file XML
 
 Validation name: Unit tests
-Execution time: 2026-07-31 11:27:20
+Execution time: 2026-07-31 11:34:47
 Exit code: 1
 Output: 
 Welcome to Gradle 7.4!
@@ -39,14 +39,18 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :NewPackage:iflow-Test_Flow:test
 
 GroovyScriptsTest > test_script1Groovy(String) > com.figaf.GroovyScriptsTest.test_script1Groovy(String)[1] FAILED
-    org.opentest4j.MultipleFailuresError at GroovyScriptsTest.groovy:15
-        Caused by: java.lang.AssertionError at GroovyScriptsTest.groovy:15
+    org.opentest4j.MultipleFailuresError at GroovyScriptsTest.groovy:16
+        Caused by: java.lang.AssertionError at GroovyScriptsTest.groovy:16
 
 GroovyScriptsTest > test_script1Groovy(String) > com.figaf.GroovyScriptsTest.test_script1Groovy(String)[2] FAILED
-    org.opentest4j.MultipleFailuresError at GroovyScriptsTest.groovy:15
-        Caused by: java.lang.AssertionError at GroovyScriptsTest.groovy:15
+    org.opentest4j.MultipleFailuresError at GroovyScriptsTest.groovy:16
+        Caused by: java.lang.AssertionError at GroovyScriptsTest.groovy:16
 
-2 tests completed, 2 failed
+GroovyScriptsTest > test_script1Groovy(String) > com.figaf.GroovyScriptsTest.test_script1Groovy(String)[3] FAILED
+    org.opentest4j.MultipleFailuresError at GroovyScriptsTest.groovy:16
+        Caused by: java.lang.AssertionError at GroovyScriptsTest.groovy:16
+
+3 tests completed, 3 failed
 
 > Task :NewPackage:iflow-Test_Flow:test FAILED
 
@@ -63,6 +67,6 @@ Execution failed for task ':NewPackage:iflow-Test_Flow:test'.
 
 * Get more help at https://help.gradle.org
 
-BUILD FAILED in 20s
+BUILD FAILED in 26s
 6 actionable tasks: 6 executed
 
