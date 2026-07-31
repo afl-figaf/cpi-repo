@@ -48,3 +48,9 @@ project (":FigafIRTinfrastructure:sc-FigafMigration").projectDir = file("FigafIR
 include "com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.generic"
 project (":com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.generic").projectDir = file("com.sap.integration.dsi/IntegrationFlow/com.sap.integration.dsi.dataplane.generic")
 
+include "FigafJiraIntegration:mm-Message_Mapping_one"
+project (":FigafJiraIntegration:mm-Message_Mapping_one").projectDir = file("FigafJiraIntegration/MessageMapping/Message_Mapping_one")
+
+include "FigafJiraIntegration:sc-T_Script_Col"
+project (":FigafJiraIntegration:sc-T_Script_Col").projectDir = file("FigafJiraIntegration/ScriptCollection/T_Script_Col")
+
