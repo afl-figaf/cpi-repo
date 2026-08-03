@@ -28,7 +28,7 @@ abstract class AbstractGroovyTest {
         "StatusProvider_ID" ,
         "SAP_Auth" ,
         "SAP_MessageProcessing" ,
-        "SAP_Monitoring"
+        "SAP_Monitoring",
         "SAP_InspectModelStepId"
     ]
 
