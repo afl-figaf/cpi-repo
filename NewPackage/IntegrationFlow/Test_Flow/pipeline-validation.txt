@@ -1,5 +1,5 @@
 Validation name: CPI Lint
-Execution time: 2026-07-31 11:55:21
+Execution time: 2026-08-03 13:05:04
 Exit code: 1
 Output: CPILint version 1.1.0, copyright (c) 2019-2025 Morten N. Wittrock
 
@@ -16,7 +16,7 @@ In iflow 'Test Flow' (ID 'Test_Flow'): Iflow does not have the required descript
 Inspecting 1 iflow resulted in 1 issue found.
 
 Validation name: Unit tests
-Execution time: 2026-07-31 11:55:51
+Execution time: 2026-08-03 13:05:30
 Exit code: 1
 Output: 
 Welcome to Gradle 7.4!
@@ -71,6 +71,6 @@ Execution failed for task ':NewPackage:iflow-Test_Flow:test'.
 
 * Get more help at https://help.gradle.org
 
-BUILD FAILED in 28s
+BUILD FAILED in 25s
 6 actionable tasks: 6 executed
 
