@@ -115,6 +115,16 @@ jobs:
             echo -e "Output: $output\n" >> "$integrationFlowDir/pipeline-validation.txt"
           done
 
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/**
+            **/build/test-results/**
+          if-no-files-found: warn
+          
       - name: Commit and push changes
         run: |
           if [[ $(git status --porcelain) ]]; then
