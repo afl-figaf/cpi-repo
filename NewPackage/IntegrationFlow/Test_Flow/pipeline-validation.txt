@@ -1,5 +1,5 @@
 Validation name: CPI Lint
-Execution time: 2026-08-03 17:34:27
+Execution time: 2026-08-03 17:43:59
 Exit code: 0
 Output: CPILint version 1.1.0, copyright (c) 2019-2025 Morten N. Wittrock
 
@@ -14,8 +14,8 @@ Output: CPILint version 1.1.0, copyright (c) 2019-2025 Morten N. Wittrock
 Inspecting 1 iflow resulted in 0 issues found.
 
 Validation name: Unit tests
-Execution time: 2026-08-03 17:34:50
-Exit code: 1
+Execution time: 2026-08-03 17:44:28
+Exit code: 0
 Output: 
 Welcome to Gradle 7.4!
 
@@ -28,31 +28,25 @@ For more details see https://docs.gradle.org/7.4/release-notes.html
 
 Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :common:compileJava NO-SOURCE
-
 > Task :common:compileGroovy
-startup failed:
-/home/runner/work/cpi-repo/cpi-repo/common/src/main/groovy/com/figaf/AbstractGroovyTest.groovy: 32: expecting ']', found 'SAP_InspectModelStepId' @ line 32, column 9.
-           "SAP_InspectModelStepId"
-           ^
+> Task :common:processResources NO-SOURCE
+> Task :common:classes
+> Task :common:jar
+> Task :common:compileTestJava NO-SOURCE
+> Task :common:compileTestGroovy NO-SOURCE
+> Task :common:processTestResources NO-SOURCE
+> Task :common:testClasses UP-TO-DATE
+> Task :common:test NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:compileJava NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:compileGroovy NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:processResources
+> Task :NewPackage:iflow-Test_Flow:classes
+> Task :NewPackage:iflow-Test_Flow:compileTestJava NO-SOURCE
+> Task :NewPackage:iflow-Test_Flow:compileTestGroovy
+> Task :NewPackage:iflow-Test_Flow:processTestResources
+> Task :NewPackage:iflow-Test_Flow:testClasses
+> Task :NewPackage:iflow-Test_Flow:test
 
-1 error
-
-
-> Task :common:compileGroovy FAILED
-
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-Execution failed for task ':common:compileGroovy'.
-> Compilation failed; see the compiler error output for details.
-
-* Try:
-> Run with --stacktrace option to get the stack trace.
-> Run with --info or --debug option to get more log output.
-> Run with --scan to get full insights.
-
-* Get more help at https://help.gradle.org
-
-BUILD FAILED in 22s
-1 actionable task: 1 executed
+BUILD SUCCESSFUL in 27s
+6 actionable tasks: 6 executed
 
