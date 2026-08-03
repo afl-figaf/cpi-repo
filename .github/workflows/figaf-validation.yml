@@ -8,20 +8,25 @@ on:
 permissions:
   contents: write
 
+env:
+  # Set to 'true' to make the job fail (red X) when any CPI Lint or unit-test
+  # validation fails. Leave 'false' to keep the current record-only behaviour.
+  FAIL_ON_ERROR: 'false'
+
 jobs:
   figaf-validations:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Java 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Download and extract CPI Lint
@@ -32,7 +37,7 @@ jobs:
           chmod +x cpilint-1.1.0/bin/cpilint
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 7.4
 
@@ -115,6 +120,73 @@ jobs:
             echo -e "Output: $output\n" >> "$integrationFlowDir/pipeline-validation.txt"
           done
 
+      - name: Build validation summary
+        if: always()
+        shell: bash
+        run: |
+          repoUrl="${{ github.server_url }}/${{ github.repository }}"
+          branch="${{ github.ref_name }}"
+          runUrl="$repoUrl/actions/runs/${{ github.run_id }}"
+          hadFailure=0
+
+          {
+            echo "## Figaf validation results"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -z "${{ env.changedIflowDirs }}" ]; then
+            echo "_No changed iFlows detected._" >> "$GITHUB_STEP_SUMMARY"
+            echo "0" > /tmp/hadFailure
+            exit 0
+          fi
+
+          {
+            echo "Full HTML test reports are attached to this run as the **test-reports** artifact: [download]($runUrl#artifacts)."
+            echo ""
+            echo "| Package | iFlow | CPI Lint | Unit tests | Details |"
+            echo "|---|---|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          icon() { if [ "$1" = "0" ]; then echo ":white_check_mark:"; elif [ "$1" = "na" ]; then echo "—"; else echo ":x:"; fi; }
+
+          readarray -t changedIflowDirs <<< "${{ env.changedIflowDirs }}"
+          for integrationFlowDir in "${changedIflowDirs[@]}"; do
+            iflowName="$(basename "$integrationFlowDir")"
+            packageName="$(basename "$(dirname "$(dirname "$integrationFlowDir")")")"
+            valFile="$integrationFlowDir/pipeline-validation.txt"
+
+            lintCode="na"; testCode="na"
+            if [ -f "$valFile" ]; then
+              c=$(awk '/Validation name: CPI Lint/{f=1} f&&/Exit code:/{print $3; exit}' "$valFile"); [ -n "$c" ] && lintCode="$c"
+              c=$(awk '/Validation name: Unit tests/{f=1} f&&/Exit code:/{print $3; exit}' "$valFile"); [ -n "$c" ] && testCode="$c"
+            fi
+
+            details=""
+            if [ "$testCode" != "0" ] && [ "$testCode" != "na" ]; then
+              hadFailure=1
+              resultsDir="$integrationFlowDir/build/test-results/test"
+              if ls "$resultsDir"/*.xml >/dev/null 2>&1; then
+                details=$(grep -ho 'message="[^"]*"' "$resultsDir"/*.xml | head -n1 \
+                  | sed -E 's/^message="//; s/"$//' \
+                  | sed -E 's/&#10;/ /g; s/&#9;/ /g; s/&quot;/"/g; s/&apos;/'"'"'/g; s/&lt;/</g; s/&gt;/>/g; s/&amp;/\&/g' \
+                  | sed -E 's/^org\.opentest4j\.[A-Za-z]+: Multiple Failures \([0-9]+ failure[s]?\) *//' \
+                  | sed -E 's/\|/\\|/g' | tr -s ' ' | cut -c1-200)
+              fi
+            fi
+            if [ "$lintCode" != "0" ] && [ "$lintCode" != "na" ]; then
+              hadFailure=1
+              [ -z "$details" ] && details="CPI Lint reported issues"
+            fi
+
+            iflowLink="[$iflowName]($repoUrl/tree/$branch/$integrationFlowDir)"
+            logLink="[log]($repoUrl/blob/$branch/$integrationFlowDir/pipeline-validation.txt)"
+            row="| $packageName | $iflowLink | $(icon "$lintCode") | $(icon "$testCode") | $logLink"
+            [ -n "$details" ] && row="$row — $details"
+            echo "$row |" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+          echo "$hadFailure" > /tmp/hadFailure
+
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -124,15 +196,29 @@ jobs:
             **/build/reports/tests/**
             **/build/test-results/**
           if-no-files-found: warn
-          
+
       - name: Commit and push changes
         run: |
           if [[ $(git status --porcelain) ]]; then
             git config --local user.email "irt@figaf.com"
             git config --local user.name "Figaf"
-            git add .
-            git commit -m "Update pipeline-validation.txt"
-            git push
+            git add '**/pipeline-validation.txt'
+            if git diff --cached --quiet; then
+              echo "No pipeline-validation.txt changes to commit"
+            else
+              git commit -m "Update pipeline-validation.txt"
+              git push
+            fi
           else
             echo "No changes to commit"
           fi
+
+      - name: Fail job if validations failed
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ env.FAIL_ON_ERROR }}" = "true" ] && [ "$(cat /tmp/hadFailure 2>/dev/null)" = "1" ]; then
+            echo "::error::One or more Figaf validations failed. See the job summary for the affected iFlows."
+            exit 1
+          fi
+          echo "Validation gate: FAIL_ON_ERROR=${{ env.FAIL_ON_ERROR }}, hadFailure=$(cat /tmp/hadFailure 2>/dev/null)"
