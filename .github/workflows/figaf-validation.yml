@@ -124,66 +124,77 @@ jobs:
         if: always()
         shell: bash
         run: |
-          repoUrl="${{ github.server_url }}/${{ github.repository }}"
-          branch="${{ github.ref_name }}"
-          runUrl="$repoUrl/actions/runs/${{ github.run_id }}"
+          runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           hadFailure=0
+          testRan=0
+          rows=""
 
-          {
-            echo "## Figaf validation results"
-            echo ""
-          } >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${{ env.changedIflowDirs }}" ]; then
+            readarray -t changedIflowDirs <<< "${{ env.changedIflowDirs }}"
+            for integrationFlowDir in "${changedIflowDirs[@]}"; do
+              iflowName="$(basename "$integrationFlowDir")"
+              packageName="$(basename "$(dirname "$(dirname "$integrationFlowDir")")")"
+              valFile="$integrationFlowDir/pipeline-validation.txt"
 
-          if [ -z "${{ env.changedIflowDirs }}" ]; then
-            echo "_No changed iFlows detected._" >> "$GITHUB_STEP_SUMMARY"
-            echo "0" > /tmp/hadFailure
-            exit 0
+              # Track CPI Lint failures for the optional gate (not shown in this table).
+              if [ -f "$valFile" ]; then
+                lintCode=$(awk '/Validation name: CPI Lint/{f=1} f&&/Exit code:/{print $3; exit}' "$valFile")
+                [ -n "$lintCode" ] && [ "$lintCode" != "0" ] && hadFailure=1
+              fi
+
+              # Only iFlows that actually ran a unit test appear in this table.
+              if [ ! -f "$valFile" ] || ! grep -q 'Validation name: Unit tests' "$valFile"; then
+                continue
+              fi
+              testRan=1
+              testCode=$(awk '/Validation name: Unit tests/{f=1} f&&/Exit code:/{print $3; exit}' "$valFile")
+              [ -z "$testCode" ] && testCode=0
+
+              # iFlow version = Bundle-Version from the manifest (same value as CPI's Version column).
+              version="—"
+              mf="$integrationFlowDir/META-INF/MANIFEST.MF"
+              if [ -f "$mf" ]; then
+                v=$(awk -F': ' '/^Bundle-Version:/{print $2; exit}' "$mf" | tr -d '\r')
+                [ -n "$v" ] && version="$v"
+              fi
+
+              if [ "$testCode" = "0" ]; then
+                outcome=":white_check_mark:"
+                details="—"
+              else
+                outcome=":x:"
+                hadFailure=1
+                msg=""
+                resultsDir="$integrationFlowDir/build/test-results/test"
+                if ls "$resultsDir"/*.xml >/dev/null 2>&1; then
+                  msg=$(grep -ho 'message="[^"]*"' "$resultsDir"/*.xml | head -n1 \
+                    | sed -E 's/^message="//; s/"$//' \
+                    | sed -E 's/&#10;/ /g; s/&#9;/ /g; s/&quot;/"/g; s/&apos;/'"'"'/g; s/&lt;/</g; s/&gt;/>/g; s/&amp;/\&/g' \
+                    | sed -E 's/^org\.opentest4j\.[A-Za-z]+: Multiple Failures \([0-9]+ failure[s]?\) *//' \
+                    | sed -E 's/\|/\\|/g' | tr -s ' ' | cut -c1-200)
+                fi
+                if [ -n "$msg" ]; then
+                  details="$msg ([report]($runUrl))"
+                else
+                  details="[report]($runUrl)"
+                fi
+              fi
+
+              rows="${rows}| ${packageName} | ${iflowName} | ${version} | ${outcome} | ${details} |"$'\n'
+            done
           fi
 
-          {
-            echo "Full HTML test reports are attached to this run as the **test-reports** artifact: [download]($runUrl#artifacts)."
-            echo ""
-            echo "| Package | iFlow | CPI Lint | Unit tests | Details |"
-            echo "|---|---|---|---|---|"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          icon() { if [ "$1" = "0" ]; then echo ":white_check_mark:"; elif [ "$1" = "na" ]; then echo "—"; else echo ":x:"; fi; }
-
-          readarray -t changedIflowDirs <<< "${{ env.changedIflowDirs }}"
-          for integrationFlowDir in "${changedIflowDirs[@]}"; do
-            iflowName="$(basename "$integrationFlowDir")"
-            packageName="$(basename "$(dirname "$(dirname "$integrationFlowDir")")")"
-            valFile="$integrationFlowDir/pipeline-validation.txt"
-
-            lintCode="na"; testCode="na"
-            if [ -f "$valFile" ]; then
-              c=$(awk '/Validation name: CPI Lint/{f=1} f&&/Exit code:/{print $3; exit}' "$valFile"); [ -n "$c" ] && lintCode="$c"
-              c=$(awk '/Validation name: Unit tests/{f=1} f&&/Exit code:/{print $3; exit}' "$valFile"); [ -n "$c" ] && testCode="$c"
-            fi
-
-            details=""
-            if [ "$testCode" != "0" ] && [ "$testCode" != "na" ]; then
-              hadFailure=1
-              resultsDir="$integrationFlowDir/build/test-results/test"
-              if ls "$resultsDir"/*.xml >/dev/null 2>&1; then
-                details=$(grep -ho 'message="[^"]*"' "$resultsDir"/*.xml | head -n1 \
-                  | sed -E 's/^message="//; s/"$//' \
-                  | sed -E 's/&#10;/ /g; s/&#9;/ /g; s/&quot;/"/g; s/&apos;/'"'"'/g; s/&lt;/</g; s/&gt;/>/g; s/&amp;/\&/g' \
-                  | sed -E 's/^org\.opentest4j\.[A-Za-z]+: Multiple Failures \([0-9]+ failure[s]?\) *//' \
-                  | sed -E 's/\|/\\|/g' | tr -s ' ' | cut -c1-200)
-              fi
-            fi
-            if [ "$lintCode" != "0" ] && [ "$lintCode" != "na" ]; then
-              hadFailure=1
-              [ -z "$details" ] && details="CPI Lint reported issues"
-            fi
-
-            iflowLink="[$iflowName]($repoUrl/tree/$branch/$integrationFlowDir)"
-            logLink="[log]($repoUrl/blob/$branch/$integrationFlowDir/pipeline-validation.txt)"
-            row="| $packageName | $iflowLink | $(icon "$lintCode") | $(icon "$testCode") | $logLink"
-            [ -n "$details" ] && row="$row — $details"
-            echo "$row |" >> "$GITHUB_STEP_SUMMARY"
-          done
+          # Render the table only if at least one unit test was run.
+          if [ "$testRan" = "1" ]; then
+            {
+              echo "## Unit test results"
+              echo ""
+              echo "| Package | iFlow | Version | Unit Tests Outcome | Details |"
+              echo "|:---:|:---:|:---:|:---:|:---|"
+              printf '%s' "$rows"
+              echo ""
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
           echo "$hadFailure" > /tmp/hadFailure
 
