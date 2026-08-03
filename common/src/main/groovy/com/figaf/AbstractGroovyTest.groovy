@@ -29,6 +29,7 @@ abstract class AbstractGroovyTest {
         "SAP_Auth" ,
         "SAP_MessageProcessing" ,
         "SAP_Monitoring"
+        "SAP_InspectModelStepId"
     ]
 
     public static final List<String> DEFAULT_IGNORED_KEYS = [
