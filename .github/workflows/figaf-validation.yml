@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - 'cpi-figaf'
+  workflow_dispatch:
+    inputs:
+      run_all:
+        description: 'Run CPIlint + groovy unit tests on ALL iFlows'
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -42,8 +48,25 @@ jobs:
           gradle-version: 7.4
 
       - name: Get changed IFlow directories
+        shell: bash
         run: |
-          changedIflowDirs=$(git diff --name-only --diff-filter=d HEAD^ | grep -E '.*/IntegrationFlow/[^/]+' | awk -F/ '{print $1"/"$2"/"$3}' | sort | uniq)
+          # Package roots that hold Integration Suite content. Anything else in the
+          # repo (tooling, cpilint download, common test module) is ignored.
+          packageRoots="FigafIRTinfrastructure FigafJiraIntegration NewPackage com.sap.integration.dsi"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.run_all }}" = "true" ]; then
+            # Manual run: enumerate EVERY iFlow across the known package roots.
+            echo "Manual run_all dispatch: selecting all iFlows."
+            changedIflowDirs=$(
+              for root in $packageRoots; do
+                [ -d "$root/IntegrationFlow" ] && find "$root/IntegrationFlow" -mindepth 1 -maxdepth 1 -type d
+              done | grep -E '/IntegrationFlow/[^/]+$' | sort | uniq
+            )
+          else
+            # Push (or manual run with run_all=false): only what changed in the last commit.
+            changedIflowDirs=$(git diff --name-only --diff-filter=d HEAD^ | grep -E '.*/IntegrationFlow/[^/]+' | awk -F/ '{print $1"/"$2"/"$3}' | sort | uniq)
+          fi
+
           echo "Changed IFlow Directories: $changedIflowDirs"
 
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
