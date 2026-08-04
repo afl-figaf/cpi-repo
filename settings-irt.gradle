@@ -54,3 +54,6 @@ project (":FigafJiraIntegration:mm-Message_Mapping_one").projectDir = file("Figa
 include "FigafJiraIntegration:sc-T_Script_Col"
 project (":FigafJiraIntegration:sc-T_Script_Col").projectDir = file("FigafJiraIntegration/ScriptCollection/T_Script_Col")
 
+include "NewPackage:iflow-Test_Flow_Two"
+project (":NewPackage:iflow-Test_Flow_Two").projectDir = file("NewPackage/IntegrationFlow/Test_Flow_Two")
+
