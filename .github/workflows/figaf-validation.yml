@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       run_all:
-        description: 'Run CPIlint + groovy unit tests on ALL iFlows'
+        description: 'Run lint + tests on ALL iFlows (not just changed ones)'
         type: boolean
         default: true
 
@@ -60,11 +60,11 @@ jobs:
             changedIflowDirs=$(
               for root in $packageRoots; do
                 [ -d "$root/IntegrationFlow" ] && find "$root/IntegrationFlow" -mindepth 1 -maxdepth 1 -type d
-              done | grep -E '/IntegrationFlow/[^/]+$' | sort | uniq
+              done | grep -E '/IntegrationFlow/[^/]+$' | sort | uniq || true
             )
           else
             # Push (or manual run with run_all=false): only what changed in the last commit.
-            changedIflowDirs=$(git diff --name-only --diff-filter=d HEAD^ | grep -E '.*/IntegrationFlow/[^/]+' | awk -F/ '{print $1"/"$2"/"$3}' | sort | uniq)
+            changedIflowDirs=$(git diff --name-only --diff-filter=d HEAD^ | grep -E '.*/IntegrationFlow/[^/]+' | awk -F/ '{print $1"/"$2"/"$3}' | sort | uniq || true)
           fi
 
           echo "Changed IFlow Directories: $changedIflowDirs"
@@ -190,7 +190,7 @@ jobs:
                 msg=""
                 resultsDir="$integrationFlowDir/build/test-results/test"
                 if ls "$resultsDir"/*.xml >/dev/null 2>&1; then
-                  msg=$(grep -ho 'message="[^"]*"' "$resultsDir"/*.xml | head -n1 \
+                  msg=$( { grep -ho 'message="[^"]*"' "$resultsDir"/*.xml || true; } | head -n1 \
                     | sed -E 's/^message="//; s/"$//' \
                     | sed -E 's/&#10;/ /g; s/&#9;/ /g; s/&quot;/"/g; s/&apos;/'"'"'/g; s/&lt;/</g; s/&gt;/>/g; s/&amp;/\&/g' \
                     | sed -E 's/^org\.opentest4j\.[A-Za-z]+: Multiple Failures \([0-9]+ failure[s]?\) *//' \
