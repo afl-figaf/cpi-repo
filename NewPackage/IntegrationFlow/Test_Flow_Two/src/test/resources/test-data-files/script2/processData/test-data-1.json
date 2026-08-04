@@ -25,7 +25,7 @@
       "CamelToEndpoint" : "sap-size-limit://limit?attachments=&body=41943040",
       "StatusProvider_CAMEL_4ED0CADEE34368F-0000000000000001" : "StatusProvider [status=com.sap.it.op.mpl.message.status.ProcessingStatus@7e4e9c44]"
     },
-    "body" : "messg two-success"
+    "body" : "messg two error-success"
   },
   "output" : {
     "headers" : {
