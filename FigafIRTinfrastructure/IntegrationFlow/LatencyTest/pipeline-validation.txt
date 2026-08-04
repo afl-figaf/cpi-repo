@@ -1,31 +1,15 @@
 Validation name: CPI Lint
-Execution time: 2026-07-26 23:05:30
-Exit code: 2
-Output: There was an error in the rules file: Error parsing rules file XML
-
-Validation name: Unit tests
-Execution time: 2026-07-26 23:06:00
+Execution time: 2026-08-04 13:30:58
 Exit code: 0
-Output: > Task :common:compileJava NO-SOURCE
-> Task :common:compileGroovy UP-TO-DATE
-> Task :common:processResources NO-SOURCE
-> Task :common:classes UP-TO-DATE
-> Task :common:jar UP-TO-DATE
-> Task :common:compileTestJava NO-SOURCE
-> Task :common:compileTestGroovy NO-SOURCE
-> Task :common:processTestResources NO-SOURCE
-> Task :common:testClasses UP-TO-DATE
-> Task :common:test NO-SOURCE
-> Task :FigafIRTinfrastructure:iflow-LatencyTest:compileJava NO-SOURCE
-> Task :FigafIRTinfrastructure:iflow-LatencyTest:compileGroovy NO-SOURCE
-> Task :FigafIRTinfrastructure:iflow-LatencyTest:processResources
-> Task :FigafIRTinfrastructure:iflow-LatencyTest:classes
-> Task :FigafIRTinfrastructure:iflow-LatencyTest:compileTestJava NO-SOURCE
-> Task :FigafIRTinfrastructure:iflow-LatencyTest:compileTestGroovy NO-SOURCE
-> Task :FigafIRTinfrastructure:iflow-LatencyTest:processTestResources NO-SOURCE
-> Task :FigafIRTinfrastructure:iflow-LatencyTest:testClasses UP-TO-DATE
-> Task :FigafIRTinfrastructure:iflow-LatencyTest:test NO-SOURCE
+Output: CPILint version 1.1.0, copyright (c) 2019-2025 Morten N. Wittrock
 
-BUILD SUCCESSFUL in 1s
-3 actionable tasks: 1 executed, 2 up-to-date
+ ________  ________  ___  ___       ___  ________   _________   
+|\   ____\|\   __  \|\  \|\  \     |\  \|\   ___  \|\___   ___\ 
+\ \  \___|\ \  \|\  \ \  \ \  \    \ \  \ \  \ \  \|___ \  \_| 
+ \ \  \    \ \   ____\ \  \ \  \    \ \  \ \  \ \  \   \ \  \  
+  \ \  \____\ \  \___|\ \  \ \  \____\ \  \ \  \ \  \   \ \  \ 
+   \ \_______\ \__\    \ \__\ \_______\ \__\ \__\ \__\   \ \__\
+    \|_______|\|__|     \|__|\|_______|\|__|\|__| \|__|    \|__|
+
+Inspecting 1 iflow resulted in 0 issues found.
 

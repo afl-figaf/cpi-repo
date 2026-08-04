@@ -1,31 +1,17 @@
 Validation name: CPI Lint
-Execution time: 2026-07-26 23:05:33
-Exit code: 2
-Output: There was an error in the rules file: Error parsing rules file XML
+Execution time: 2026-08-04 13:31:05
+Exit code: 1
+Output: CPILint version 1.1.0, copyright (c) 2019-2025 Morten N. Wittrock
 
-Validation name: Unit tests
-Execution time: 2026-07-26 23:06:15
-Exit code: 0
-Output: > Task :common:compileJava NO-SOURCE
-> Task :common:compileGroovy UP-TO-DATE
-> Task :common:processResources NO-SOURCE
-> Task :common:classes UP-TO-DATE
-> Task :common:jar UP-TO-DATE
-> Task :common:compileTestJava NO-SOURCE
-> Task :common:compileTestGroovy NO-SOURCE
-> Task :common:processTestResources NO-SOURCE
-> Task :common:testClasses UP-TO-DATE
-> Task :common:test NO-SOURCE
-> Task :com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy:compileJava NO-SOURCE
-> Task :com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy:compileGroovy NO-SOURCE
-> Task :com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy:processResources
-> Task :com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy:classes
-> Task :com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy:compileTestJava NO-SOURCE
-> Task :com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy:compileTestGroovy NO-SOURCE
-> Task :com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy:processTestResources NO-SOURCE
-> Task :com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy:testClasses UP-TO-DATE
-> Task :com.sap.integration.dsi:iflow-com.sap.integration.dsi.dataplane.copy:test NO-SOURCE
+ ________  ________  ___  ___       ___  ________   _________   
+|\   ____\|\   __  \|\  \|\  \     |\  \|\   ___  \|\___   ___\ 
+\ \  \___|\ \  \|\  \ \  \ \  \    \ \  \ \  \ \  \|___ \  \_| 
+ \ \  \    \ \   ____\ \  \ \  \    \ \  \ \  \ \  \   \ \  \  
+  \ \  \____\ \  \___|\ \  \ \  \____\ \  \ \  \ \  \   \ \  \ 
+   \ \_______\ \__\    \ \__\ \_______\ \__\ \__\ \__\   \ \__\
+    \|_______|\|__|     \|__|\|_______|\|__|\|__| \|__|    \|__|
 
-BUILD SUCCESSFUL in 1s
-3 actionable tasks: 1 executed, 2 up-to-date
+In iflow 'Copy Data Plane Integration Flow' (ID 'com.sap.integration.dsi.dataplane.copy'): Iflow does not have the required description.
+
+Inspecting 1 iflow resulted in 1 issue found.
 
