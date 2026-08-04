@@ -15,11 +15,3 @@ dependencies {
     api('com.sap.cloud.script:script.api:2.14.0')
     api('com.sap.cloud.adk:generic.api:2.28.0')
 }
-
-tasks.withType(Test).configureEach {
-    testLogging {
-        events "failed"
-        exceptionFormat "full"
-        showStandardStreams true
-    }
-}
