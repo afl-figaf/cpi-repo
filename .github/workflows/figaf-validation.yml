@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       run_all:
-        description: 'Run lint + tests on all iFlows'
+        description: 'Run lint + tests on ALL iFlows'
         type: boolean
         default: true
 
@@ -141,13 +141,43 @@ jobs:
             echo "Execution time: $(date +'%Y-%m-%d %H:%M:%S')" >> "$integrationFlowDir/pipeline-validation.txt"
             echo "Exit code: $runTestsStatus" >> "$integrationFlowDir/pipeline-validation.txt"
             echo -e "Output: $output\n" >> "$integrationFlowDir/pipeline-validation.txt"
+
+            # On failure, append the decoded assertion(s) from the JUnit XML so the
+            # committed log contains the full, readable Groovy test error.
+            if [ "$runTestsStatus" != "0" ]; then
+              resultsDir="$integrationFlowDir/build/test-results/test"
+              if ls "$resultsDir"/*.xml >/dev/null 2>&1; then
+                echo "Failure details:" >> "$integrationFlowDir/pipeline-validation.txt"
+                { grep -ho 'message="[^"]*"' "$resultsDir"/*.xml || true; } | while read -r line; do
+                  printf '%s' "$line" \
+                    | sed -E 's/^message="//; s/"$//' \
+                    | sed -E 's/&#10;/\n/g; s/&#9;/\t/g; s/&quot;/"/g; s/&apos;/'"'"'/g; s/&lt;/</g; s/&gt;/>/g; s/&amp;/\&/g' \
+                    >> "$integrationFlowDir/pipeline-validation.txt"
+                  echo "" >> "$integrationFlowDir/pipeline-validation.txt"
+                done
+                echo "" >> "$integrationFlowDir/pipeline-validation.txt"
+              fi
+            fi
           done
+
+      - name: Upload test reports
+        id: upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            **/build/reports/tests/**
+            **/build/test-results/**
+          if-no-files-found: warn
 
       - name: Build validation summary
         if: always()
         shell: bash
         run: |
           runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          reportUrl="${{ steps.upload.outputs.artifact-url }}"
+          [ -z "$reportUrl" ] && reportUrl="$runUrl"
           hadFailure=0
           testRan=0
           rows=""
@@ -197,9 +227,9 @@ jobs:
                     | sed -E 's/\|/\\|/g' | tr -s ' ' | cut -c1-200)
                 fi
                 if [ -n "$msg" ]; then
-                  details="$msg ([report]($runUrl))"
+                  details="$msg ([report]($reportUrl))"
                 else
-                  details="[report]($runUrl)"
+                  details="[report]($reportUrl)"
                 fi
               fi
 
@@ -220,16 +250,6 @@ jobs:
           fi
 
           echo "$hadFailure" > /tmp/hadFailure
-
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            **/build/reports/tests/**
-            **/build/test-results/**
-          if-no-files-found: warn
 
       - name: Commit and push changes
         run: |
