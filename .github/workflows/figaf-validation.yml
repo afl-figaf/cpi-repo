@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       run_all:
-        description: 'Run CPIlint + unit tests on all iFlows'
+        description: 'Run lint + tests on ALL iFlows'
         type: boolean
         default: true
 
@@ -160,11 +160,35 @@ jobs:
             fi
           done
 
+      - name: Generate test summary page
+        if: always()
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_BRANCH: ${{ github.ref_name }}
+          GH_RUN_ID: ${{ github.run_id }}
+          GH_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 .github/workflows/generate-test-summary.py
+
+      - name: Upload test reports
+        id: upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            test-summary.html
+            **/build/reports/tests/**
+            **/build/test-results/**
+          if-no-files-found: warn
+
       - name: Build validation summary
         if: always()
         shell: bash
         run: |
           runUrl="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          reportUrl="${{ steps.upload.outputs.artifact-url }}"
+          [ -z "$reportUrl" ] && reportUrl="$runUrl"
           hadFailure=0
           testRan=0
           rows=""
@@ -230,6 +254,8 @@ jobs:
             {
               echo "## Unit test results"
               echo ""
+              echo "Full test report (all runs): [download]($reportUrl) — open \`test-summary.html\` at the root of the zip for an overview of every iFlow."
+              echo ""
               echo "| Package | iFlow | Version | Unit Tests Outcome | Details |"
               echo "|:---:|:---:|:---:|:---:|:---|"
               printf '%s' "$rows"
@@ -238,16 +264,6 @@ jobs:
           fi
 
           echo "$hadFailure" > /tmp/hadFailure
-
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            **/build/reports/tests/**
-            **/build/test-results/**
-          if-no-files-found: warn
 
       - name: Commit and push changes
         run: |
